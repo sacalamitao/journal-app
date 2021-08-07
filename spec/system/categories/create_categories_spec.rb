@@ -1,9 +1,23 @@
 require 'rails_helper'
 
 RSpec.describe "CreateCategories", type: :system, js: true do
+  let(:user) {User.create(username: 'janedoe', firstname: 'Jane', lastname: 'Doe', password: 'password', password_confirmation: 'password')}
+  
+  def login(user)
+    visit root_path
+    fill_in 'Username', with: user.username
+    fill_in 'Password', with: user.password
+    click_on 'Log In'
+  end
+
+  before do
+    driven_by :selenium, using: :chrome
+    login(user)
+    visit new_user_category_path(user)
+  end
+
   context 'valid inputs' do
     it 'saves and displays new category' do
-      visit new_category_path
       # Fill in form
       expect do
         within 'form' do
@@ -22,7 +36,6 @@ RSpec.describe "CreateCategories", type: :system, js: true do
   end
   context 'invalid inputs' do
     it 'renders new view and displays error' do
-      visit new_category_path
       # Fill in form
       expect do
         within 'form' do
